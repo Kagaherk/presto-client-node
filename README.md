@@ -5,7 +5,7 @@ Distributed query engine "Presto" 's client library for node.js.
 ```js
 var presto = require('presto-client');
 var client = new presto.Client({user: 'myname', catalog: 'hive', schema: 'default'});
- 
+
 client.execute('show schemas', function(error, data, columns){
   console.log({databases: data});
 });
@@ -15,7 +15,7 @@ For queries with long process time and heavy output:
 ```js
 var presto = require('presto-client');
 var client = new presto.Client({user: 'myname'});
- 
+
 client.execute({
   query:   'SELECT count(*) as cnt FROM tblname WHERE ...',
   catalog: 'hive',
@@ -77,6 +77,10 @@ Execute query on Presto cluster, and fetch results.
      * catalog string (default: instance default catalog)
    * schema [string]
      * schema string (default: intance default schema)
+   * session [string]
+     * set session variables via the [X-Presto-Session header](https://stackoverflow.com/questions/37082016/how-to-manage-presto-query-session-variables-using-rest-api) - string should have form `key1=val1,key2=val2` 
+   * timezone [string :optional]
+     * set time zone via [X-Presto-Time-Zone header](https://prestodb.io/docs/current/release/release-0.66.html)
 * callback [function(error, data, columns)]
  * called once when query finished
  * data
@@ -96,6 +100,7 @@ Attributes of opts [object] are:
 * query [string]
 * catalog [string]
 * schema [string]
+* timezone [string :optional]
 * info [boolean :optional]
   * fetch query info (execution statistics) for success callback, or not (default false)
 * cancel [function() :optional]
@@ -179,6 +184,12 @@ var client = new presto.Client({
 
 ## Versions
 
+* 0.1.3:
+  * add X-Presto-Time-Zone if "timezone" specified
+* 0.1.2:
+  * add X-Presto-Session if "session" specified
+* 0.1.1:
+  * fix bug not to handle HTTP level errors correctly
 * 0.1.0:
   * add option to pass customized json parser to handle BIGINT values
   * add check for required callbacks of query execution
